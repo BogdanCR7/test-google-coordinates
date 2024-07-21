@@ -13,10 +13,10 @@ export class AppComponent implements AfterViewInit {
   private _map: GoogleMap;
 
   @ViewChild(GoogleMap)
-  set map(value: GoogleMap) {
+  set googleMap(value: GoogleMap) {
     this._map = value;
   }
-  get map(): GoogleMap {
+  get googleMap(): GoogleMap {
     return this._map;
   }
   temp: GeolocationPosition;
@@ -44,12 +44,12 @@ export class AppComponent implements AfterViewInit {
       navigator.geolocation.watchPosition((position) => {
         let marker = new google.maps.Marker({
           position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
-          map: this.map.googleMap
+          map: this.googleMap.googleMap
         });
         this.temp=position;
-        marker.setMap(this.map.googleMap);
+        marker.setMap(this.googleMap.googleMap);
         let bounds = new google.maps.LatLngBounds();
-        this.map.fitBounds(bounds.extend(new google.maps.LatLng(position.coords.latitude, position.coords.longitude)));
+        this.googleMap.fitBounds(bounds.extend(new google.maps.LatLng(position.coords.latitude, position.coords.longitude)));
       });
     }
   }
