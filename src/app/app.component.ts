@@ -11,7 +11,8 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent implements AfterViewInit {
   private _map: GoogleMap;
-  marker: google.maps.Marker;
+  private marker: google.maps.Marker;
+  public temp: GeolocationPosition;
 
   @ViewChild(GoogleMap)
   set map(value: GoogleMap) {
@@ -20,7 +21,6 @@ export class AppComponent implements AfterViewInit {
   get map(): GoogleMap {
     return this._map;
   }
-  temp: GeolocationPosition;
 
   ngAfterViewInit(): void {
     if (navigator.geolocation) {
@@ -46,10 +46,11 @@ export class AppComponent implements AfterViewInit {
         this.marker.setMap(null);
         this.marker = new google.maps.Marker({
           position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
-          map: this.map.googleMap
+          map: this.map.googleMap,
+          animation : google.maps.Animation.DROP
         });
         this.marker.setMap(this.map.googleMap);
-        this.temp=position;
+        this.temp = position;
         let bounds = new google.maps.LatLngBounds();
         this.map.fitBounds(bounds.extend(new google.maps.LatLng(position.coords.latitude, position.coords.longitude)));
       });
