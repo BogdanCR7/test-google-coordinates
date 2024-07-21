@@ -48,6 +48,8 @@ export class AppComponent implements AfterViewInit {
         });
         this.temp=position;
         marker.setMap(this.map.googleMap);
+        let bounds = new google.maps.LatLngBounds();
+        this.map.fitBounds(bounds.extend(new google.maps.LatLng(position.coords.latitude, position.coords.longitude)));
       });
     }
   }
