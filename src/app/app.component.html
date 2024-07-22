@@ -8,7 +8,7 @@
   <div>Latitude:{{temp?.coords?.latitude}}</div>
   <div>Longitude:{{temp?.coords?.longitude}}</div>
 </div>
-<div #infoLogElement style="background-color: #fff;font-size: 16px;width: 260px;display: flex;flex-direction: column;padding: 2px;max-height: 200px;border:1px solid; overflow-y: auto;">
+<div #infoLogElement style="background-color: #fff;font-size: 12px;width: 260px;display: flex;flex-direction: column;padding: 2px;max-height: 200px;border:1px solid; overflow-y: auto;">
   <ng-container *ngIf="infoLog">
     <div *ngFor="let item of infoLog">
       {{item}}

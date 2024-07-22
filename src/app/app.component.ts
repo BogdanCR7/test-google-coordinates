@@ -60,7 +60,7 @@ export class AppComponent implements AfterViewInit {
         this.googleMap.fitBounds(bounds.extend(new google.maps.LatLng(position.coords.latitude, position.coords.longitude)));
         let time = new Date();
 
-        this.infoLog.push(`${time.getHours()}${time.getMinutes()}${time.getMilliseconds()} <<Watch Position Accuracy:${position.coords.accuracy},Latitude:${position.coords.latitude},Longitude:${position.coords.longitude}`);
+        this.infoLog.push(`${time.getHours()}${time.getMinutes()}${time.getMilliseconds()} << Watch Position Accuracy:${position.coords.accuracy},Latitude:${position.coords.latitude},Longitude:${position.coords.longitude}`);
       }, null, optn);
     }
   }
