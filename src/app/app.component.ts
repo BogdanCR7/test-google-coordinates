@@ -27,9 +27,6 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit(): void {
 
     this._map.controls[google.maps.ControlPosition.LEFT_TOP].push(this.infoPage.nativeElement);
-
-    debugger
-    // this._map.controls.push();
     if (navigator.geolocation) {
       let optn = {
         enableHighAccuracy: true,
@@ -37,21 +34,24 @@ export class AppComponent implements AfterViewInit {
         maximumAge: 0
       };
       // let watchId = navigator.geolocation.watchPosition(null, null, optn);
-      // navigator.geolocation.getCurrentPosition((position) => {
-      //   let bounds = new google.maps.LatLngBounds();
-      //   let marker = new google.maps.Marker({
-      //     position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
-      //     map: this.map.googleMap
-      //   });
-      //   // position.coords;
-      //   marker.setMap(this.map.googleMap);
-      //   this.map.fitBounds(bounds.extend(new google.maps.LatLng(position.coords.latitude, position.coords.longitude)));
-      // });
+      navigator.geolocation.getCurrentPosition((position) => {
+        if (this.marker)
+          this.marker.setMap(null);
+
+        this.marker = new google.maps.Marker({
+          position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+          map: this.googleMap.googleMap
+        });
+        this.temp = position;
+        this.marker.setMap(this.googleMap.googleMap);
+        let bounds = new google.maps.LatLngBounds();
+        this.googleMap.fitBounds(bounds.extend(new google.maps.LatLng(position.coords.latitude, position.coords.longitude)));
+      });
 
       navigator.geolocation.watchPosition((position) => {
         if (this.marker)
           this.marker.setMap(null);
-        
+
         this.marker = new google.maps.Marker({
           position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
           map: this.googleMap.googleMap
