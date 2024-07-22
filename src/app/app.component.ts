@@ -49,7 +49,9 @@ export class AppComponent implements AfterViewInit {
       // });
 
       navigator.geolocation.watchPosition((position) => {
-        this.marker.setMap(null);
+        if (this.marker)
+          this.marker.setMap(null);
+        
         this.marker = new google.maps.Marker({
           position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
           map: this.googleMap.googleMap
@@ -58,7 +60,7 @@ export class AppComponent implements AfterViewInit {
         this.marker.setMap(this.googleMap.googleMap);
         let bounds = new google.maps.LatLngBounds();
         this.googleMap.fitBounds(bounds.extend(new google.maps.LatLng(position.coords.latitude, position.coords.longitude)));
-      });
+      }, null, optn);
     }
   }
 }
