@@ -49,7 +49,7 @@ export class AppComponent implements AfterViewInit {
 	ngAfterViewInit(): void {
 		this._map.controls[google.maps.ControlPosition.LEFT_TOP].push(this.infoPage.nativeElement);
 		// this._map.controls[google.maps.ControlPosition.RIGHT_TOP].push(this.infoLogElement.nativeElement);
-		this._map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(this.buttonPosition.nativeElement);
+		this._map.controls[google.maps.ControlPosition.RIGHT_TOP].push(this.buttonPosition.nativeElement);
 		if (navigator.geolocation) {
 			let optn = {
 				enableHighAccuracy: true,
@@ -57,9 +57,12 @@ export class AppComponent implements AfterViewInit {
 				maximumAge: 0
 			};
 			//let watchId = navigator.geolocation.watchPosition(null, null, optn);
+			navigator.permissions.query({ name: "geolocation" }).then((result) =>{
+				this.permissition=result.state;
+			});
 			this.getPositionClick();
 			navigator.geolocation.watchPosition((position) => {
-				this.permissition = 'Ok';
+				// this.permissition = 'Ok';
 				let bounds = new google.maps.LatLngBounds();
 
 				if (this.marker)
@@ -76,8 +79,8 @@ export class AppComponent implements AfterViewInit {
 				this.currentRadius = position;
 				this.marker.setMap(this.map.googleMap);
 				let currentBounds = this.map.getBounds();
-				let zoom = this.map.getZoom();
-				if (!currentBounds || zoom <= 10 || !currentBounds.contains(bounds.getNorthEast()) || !currentBounds.contains(bounds.getSouthWest())) {
+				bounds.extend(ltLng)
+				if (!currentBounds || !currentBounds.contains(bounds.getNorthEast()) || !currentBounds.contains(bounds.getSouthWest())) {
 					this.map.fitBounds(bounds);
 				}
 				let time = new Date();
@@ -93,7 +96,7 @@ export class AppComponent implements AfterViewInit {
 			maximumAge: 0
 		};
 		navigator.geolocation.getCurrentPosition((position) => {
-			this.permissition = 'Ok';
+			// this.permissition = 'Ok';
 			if (this.marker)
 				this.marker.setMap(null);
 			let ltLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -105,6 +108,12 @@ export class AppComponent implements AfterViewInit {
 			this.currentRadius = position;
 			this.marker.setMap(this.map.googleMap);
 			let bounds = new google.maps.LatLngBounds();
+			bounds.extend(ltLng);
+			let currentBounds = this.map.getBounds();
+
+			if (!currentBounds || !currentBounds.contains(bounds.getNorthEast()) || !currentBounds.contains(bounds.getSouthWest())) {
+				this.map.fitBounds(bounds);
+			}
 			this.map.fitBounds(bounds.extend(ltLng));
 
 			let time = new Date();
@@ -135,22 +144,21 @@ export class AppComponent implements AfterViewInit {
 		this.circle.setMap(this.map.googleMap);
 	}
 
-
 	showError(error) {
-		switch (error.code) {
-			case error.PERMISSION_DENIED:
-				this.permissition = 'PERMISSION DENIED';
-				break;
-			case error.POSITION_UNAVAILABLE:
-				this.permissition = 'POSITION UNAVAILABLE';
-				break;
-			case error.TIMEOUT:
-				this.permissition = 'TIMEOUT';
-				break;
-			case error.UNKNOWN_ERROR:
-				this.permissition = 'UNKNOWN ERROR';
-				break;
-		}
+		// switch (error.code) {
+		// 	case error.PERMISSION_DENIED:
+		// 		this.permissition = 'PERMISSION DENIED';
+		// 		break;
+		// 	case error.POSITION_UNAVAILABLE:
+		// 		this.permissition = 'POSITION UNAVAILABLE';
+		// 		break;
+		// 	case error.TIMEOUT:
+		// 		this.permissition = 'TIMEOUT';
+		// 		break;
+		// 	case error.UNKNOWN_ERROR:
+		// 		this.permissition = 'UNKNOWN ERROR';
+		// 		break;
+		// }
 	}
 
 
