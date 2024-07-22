@@ -1,21 +1,27 @@
-<google-map class="flex w-full h-full">
-</google-map>
+<div style="display: flex;width: 100%;height: 100%;">
+  <google-map [width]="null" [height]="'100vh'" style="width: 100%;height: 100%;" [options]="mapOptions">
+  </google-map>
+  <div #infoPage style="background-color: #fff;font-size: 16px;width: 160px;">
+    <div>Permission:{{permissition}}</div>
+    <div>Accuracy:{{temp?.coords?.accuracy.toFixed(1)}}</div>
+    <div>Speed:{{temp?.coords?.speed}}</div>
+    <div>Heading:{{temp?.coords?.heading}}</div>
+    <div>Latitude:{{temp?.coords?.latitude}}</div>
+    <div>Longitude:{{temp?.coords?.longitude}}</div>
+  </div>
+  <div #buttonPosition>
+    <button style="padding: 5px;" (click)="getPositionClick()">Get Position</button>
+  </div>
+  <div style="background-color: #fff;font-size: 12px;
+  width: 260px;display: flex;flex-direction: column;padding: 2px;height: 100%;
 
-<div #infoPage style="background-color: #fff;font-size: 16px;width: 160px;">
-  <div>Accuracy:{{temp?.coords?.accuracy}}</div>
-  <div>Speed:{{temp?.coords?.speed}}</div>
-  <div>Heading:{{temp?.coords?.heading}}</div>
-  <div>Latitude:{{temp?.coords?.latitude}}</div>
-  <div>Longitude:{{temp?.coords?.longitude}}</div>
+  overflow-x: hidden;
+  overflow:auto;
+  border:1px solid; ">
+    <ng-container *ngIf="infoLog">
+      <div *ngFor="let item of infoLog" style="padding: 4px 0; display: flex;">
+        {{item}}
+      </div>
+    </ng-container>
+  </div>
 </div>
-<div #infoLogElement style="background-color: #fff;font-size: 12px;width: 260px;display: flex;flex-direction: column;padding: 2px;max-height: 200px;border:1px solid; overflow-y: auto;">
-  <ng-container *ngIf="infoLog">
-    <div *ngFor="let item of infoLog">
-      {{item}}
-    </div>
-  </ng-container>
-</div>
-<div #buttonPosition>
-  <button (click)="getPosition()">Get Position</button>
-</div>
-<!-- <div>Longitude:{{temp.coords.}}</div> -->

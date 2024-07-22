@@ -4,89 +4,150 @@ import { GoogleMap } from '@angular/google-maps';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, GoogleMap, NgFor, NgIf],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+	selector: 'app-root',
+	standalone: true,
+	imports: [RouterOutlet, GoogleMap, NgFor, NgIf],
+	templateUrl: './app.component.html',
+	styleUrl: './app.component.scss'
 })
 export class AppComponent implements AfterViewInit {
 
-  private _map: GoogleMap;
-  private marker: google.maps.Marker;
-  public temp: GeolocationPosition;
+	private _map: GoogleMap;
+	private marker: google.maps.Marker;
+	public temp: GeolocationPosition;
 
-  public infoLog: string[] = [''];
+	public infoLog: string[] = [];
 
-  @ViewChild("infoLogElement")
-  private infoLogElement: any;
-  @ViewChild("infoPage")
-  private infoPage: ElementRef;
-  @ViewChild("buttonPosition")
-  private buttonPosition: ElementRef;
+	@ViewChild("infoLogElement")
+	private infoLogElement: any;
+	@ViewChild("infoPage")
+	private infoPage: ElementRef;
+	@ViewChild("buttonPosition")
+	private buttonPosition: ElementRef;
+	circle: google.maps.Circle;
+	permissition: string = 'Ok';
 
-  @ViewChild(GoogleMap)
-  set googleMap(value: GoogleMap) {
-    this._map = value;
-  }
-  get googleMap(): GoogleMap {
-    return this._map;
-  }
+	@ViewChild(GoogleMap)
+	set map(value: GoogleMap) {
+		this._map = value;
+	}
+	get map(): GoogleMap {
+		return this._map;
+	}
 
-  ngAfterViewInit(): void {
-    this._map.controls[google.maps.ControlPosition.LEFT_TOP].push(this.infoPage.nativeElement);
-    this._map.controls[google.maps.ControlPosition.RIGHT_TOP].push(this.infoLogElement.nativeElement);
-    this._map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(this.buttonPosition.nativeElement);
-    if (navigator.geolocation) {
-      let optn = {
-        enableHighAccuracy: true,
-        timeout: Infinity,
-        maximumAge: 0
-      };
-      //let watchId = navigator.geolocation.watchPosition(null, null, optn);
-      this.getCurrentPosition();
+	public mapOptions: google.maps.MapOptions = {
+		mapTypeId: 'satellite',
+		mapTypeControl: false,
+		fullscreenControl: false,
+		streetViewControl: false,
+		scaleControl: true,
+	}
 
-      navigator.geolocation.watchPosition((position) => {
-        if (this.marker)
-          this.marker.setMap(null);
+	constructor() {
+		this.showError=this.showError.bind(this)
+	}
+	ngAfterViewInit(): void {
+		this._map.controls[google.maps.ControlPosition.LEFT_TOP].push(this.infoPage.nativeElement);
+		// this._map.controls[google.maps.ControlPosition.RIGHT_TOP].push(this.infoLogElement.nativeElement);
+		this._map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(this.buttonPosition.nativeElement);
+		if (navigator.geolocation) {
+			let optn = {
+				enableHighAccuracy: true,
+				timeout: Infinity,
+				maximumAge: 0
+			};
+			//let watchId = navigator.geolocation.watchPosition(null, null, optn);
+			this.getPositionClick();
+			navigator.geolocation.watchPosition((position) => {
+				this.permissition = 'Ok';
+				if (this.marker)
+					this.marker.setMap(null);
 
-        this.marker = new google.maps.Marker({
-          position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
-          map: this.googleMap.googleMap
-        });
-        this.temp = position;
-        this.marker.setMap(this.googleMap.googleMap);
-        let bounds = new google.maps.LatLngBounds();
-        this.googleMap.fitBounds(bounds.extend(new google.maps.LatLng(position.coords.latitude, position.coords.longitude)));
-        let time = new Date();
+				this.marker = new google.maps.Marker({
+					position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+					map: this.map.googleMap
+				});
+				let ltLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
-        this.infoLog.push(`${time.getHours()}${time.getMinutes()}${time.getMilliseconds()} << Watch Position Accuracy:${position.coords.accuracy},Latitude:${position.coords.latitude},Longitude:${position.coords.longitude}`);
-      }, null, optn);
-    }
-  }
+				this.drawCircle(position.coords.accuracy, ltLng);
 
-  private getCurrentPosition() {
-    navigator.geolocation.getCurrentPosition((position) => {
-      if (this.marker)
-        this.marker.setMap(null);
+				this.temp = position;
+				this.marker.setMap(this.map.googleMap);
+				let bounds = new google.maps.LatLngBounds();
+				this.map.fitBounds(bounds.extend(ltLng));
+				let time = new Date();
 
-      this.marker = new google.maps.Marker({
-        position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
-        map: this.googleMap.googleMap
-      });
-      this.temp = position;
-      this.marker.setMap(this.googleMap.googleMap);
-      let bounds = new google.maps.LatLngBounds();
-      this.googleMap.fitBounds(bounds.extend(new google.maps.LatLng(position.coords.latitude, position.coords.longitude)));
+				this.infoLog.push(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} << Watch Position acc:${position.coords.accuracy.toFixed(1)},lat:${position.coords.latitude}, lng:${position.coords.longitude}`);
+			}, this.showError, optn);
+		}
+	}
 
-      let time = new Date();
-      this.infoLog.push(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} << Get Current Position Latitude:${position.coords.latitude}, Longitude:${position.coords.longitude}`);
-    });
-  }
+	private getCurrentPosition() {
+		let optn = {
+			enableHighAccuracy: true,
+			timeout: Infinity,
+			maximumAge: 0
+		};
+		navigator.geolocation.getCurrentPosition((position) => {
+			this.permissition = 'Ok';
+			if (this.marker)
+				this.marker.setMap(null);
+			let ltLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+			this.drawCircle(position.coords.accuracy, ltLng);
+			this.marker = new google.maps.Marker({
+				position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+				map: this.map.googleMap
+			});
+			this.temp = position;
+			this.marker.setMap(this.map.googleMap);
+			let bounds = new google.maps.LatLngBounds();
+			this.map.fitBounds(bounds.extend(ltLng));
 
-  public getPosition() {
-    let time = new Date();
-    this.infoLog.push(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} << getPosition clicked`);
-    this.getCurrentPosition();
-  }
+			let time = new Date();
+			this.infoLog.push(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} << Get Current Position acc:${position.coords.accuracy.toFixed(1)}, lat:${position.coords.latitude}, lng:${position.coords.longitude}`);
+		}, this.showError, optn);
+	}
+
+	public getPositionClick() {
+		let time = new Date();
+		this.infoLog.push(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} << Get Position clicked`);
+		this.getCurrentPosition();
+	}
+
+	private drawCircle(radius: number, center) {
+		if (this.circle)
+			this.circle.setMap(null);
+
+		this.circle = new google.maps.Circle({
+			strokeColor: '#FF0000',
+			strokeOpacity: 0.8,
+			strokeWeight: 2,
+			fillColor: '#FF0000',
+			fillOpacity: 0.35,
+			map: this.map.googleMap,
+			center: center,
+			radius: radius
+		});
+		this.circle.setMap(this.map.googleMap);
+	}
+
+
+	showError(error) {
+		switch (error.code) {
+			case error.PERMISSION_DENIED:
+				this.permissition = 'PERMISSION DENIED';
+				break;
+			case error.POSITION_UNAVAILABLE:
+				this.permissition = 'POSITION UNAVAILABLE';
+				break;
+			case error.TIMEOUT:
+				this.permissition = 'TIMEOUT';
+				break;
+			case error.UNKNOWN_ERROR:
+				this.permissition = 'UNKNOWN ERROR';
+				break;
+		}
+	}
+
+
 }
