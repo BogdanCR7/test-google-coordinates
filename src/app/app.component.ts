@@ -46,22 +46,22 @@ export class AppComponent implements AfterViewInit {
       //let watchId = navigator.geolocation.watchPosition(null, null, optn);
       this.getCurrentPosition();
 
-      navigator.geolocation.watchPosition((position) => {
-        if (this.marker)
-          this.marker.setMap(null);
+      // navigator.geolocation.watchPosition((position) => {
+      //   if (this.marker)
+      //     this.marker.setMap(null);
 
-        this.marker = new google.maps.Marker({
-          position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
-          map: this.googleMap.googleMap
-        });
-        this.temp = position;
-        this.marker.setMap(this.googleMap.googleMap);
-        let bounds = new google.maps.LatLngBounds();
-        this.googleMap.fitBounds(bounds.extend(new google.maps.LatLng(position.coords.latitude, position.coords.longitude)));
-        let time = new Date();
+      //   this.marker = new google.maps.Marker({
+      //     position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+      //     map: this.googleMap.googleMap
+      //   });
+      //   this.temp = position;
+      //   this.marker.setMap(this.googleMap.googleMap);
+      //   let bounds = new google.maps.LatLngBounds();
+      //   this.googleMap.fitBounds(bounds.extend(new google.maps.LatLng(position.coords.latitude, position.coords.longitude)));
+      //   let time = new Date();
 
-        this.infoLog.push(`${time.getHours()}${time.getMinutes()}${time.getMilliseconds()} << Watch Position Accuracy:${position.coords.accuracy},Latitude:${position.coords.latitude},Longitude:${position.coords.longitude}`);
-      }, null, optn);
+      //   this.infoLog.push(`${time.getHours()}${time.getMinutes()}${time.getMilliseconds()} << Watch Position Accuracy:${position.coords.accuracy},Latitude:${position.coords.latitude},Longitude:${position.coords.longitude}`);
+      // }, null, optn);
     }
   }
 
