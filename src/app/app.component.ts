@@ -87,5 +87,6 @@ export class AppComponent implements AfterViewInit {
   public getPosition() {
     let time = new Date();
     this.infoLog.push(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} << getPosition clicked`);
+    this.getCurrentPosition();
   }
 }
