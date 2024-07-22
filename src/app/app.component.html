@@ -3,11 +3,11 @@
   </google-map>
   <div #infoPage style="background-color: #fff;font-size: 16px;width: 160px;">
     <div>Permission:{{permissition}}</div>
-    <div>Accuracy:{{temp?.coords?.accuracy.toFixed(1)}}</div>
-    <div>Speed:{{temp?.coords?.speed}}</div>
-    <div>Heading:{{temp?.coords?.heading}}</div>
-    <div>Latitude:{{temp?.coords?.latitude}}</div>
-    <div>Longitude:{{temp?.coords?.longitude}}</div>
+    <div>Accuracy:{{currentRadius?.coords?.accuracy.toFixed(1)}}</div>
+    <div>Speed:{{currentRadius?.coords?.speed}}</div>
+    <div>Heading:{{currentRadius?.coords?.heading}}</div>
+    <div>Latitude:{{currentRadius?.coords?.latitude}}</div>
+    <div>Longitude:{{currentRadius?.coords?.longitude}}</div>
   </div>
   <div #buttonPosition>
     <button style="padding: 5px;" (click)="getPositionClick()">Get Position</button>

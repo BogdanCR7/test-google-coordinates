@@ -14,7 +14,7 @@ export class AppComponent implements AfterViewInit {
 
 	private _map: GoogleMap;
 	private marker: google.maps.Marker;
-	public temp: GeolocationPosition;
+	public currentRadius: GeolocationPosition;
 
 	public infoLog: string[] = [];
 
@@ -25,7 +25,7 @@ export class AppComponent implements AfterViewInit {
 	@ViewChild("buttonPosition")
 	private buttonPosition: ElementRef;
 	circle: google.maps.Circle;
-	permissition: string = 'Ok';
+	permissition: string = '..';
 
 	@ViewChild(GoogleMap)
 	set map(value: GoogleMap) {
@@ -44,7 +44,7 @@ export class AppComponent implements AfterViewInit {
 	}
 
 	constructor() {
-		this.showError=this.showError.bind(this)
+		this.showError = this.showError.bind(this)
 	}
 	ngAfterViewInit(): void {
 		this._map.controls[google.maps.ControlPosition.LEFT_TOP].push(this.infoPage.nativeElement);
@@ -60,6 +60,8 @@ export class AppComponent implements AfterViewInit {
 			this.getPositionClick();
 			navigator.geolocation.watchPosition((position) => {
 				this.permissition = 'Ok';
+				let bounds = new google.maps.LatLngBounds();
+
 				if (this.marker)
 					this.marker.setMap(null);
 
@@ -71,12 +73,14 @@ export class AppComponent implements AfterViewInit {
 
 				this.drawCircle(position.coords.accuracy, ltLng);
 
-				this.temp = position;
+				this.currentRadius = position;
 				this.marker.setMap(this.map.googleMap);
-				let bounds = new google.maps.LatLngBounds();
-				this.map.fitBounds(bounds.extend(ltLng));
+				let currentBounds = this.map.getBounds();
+				let zoom = this.map.getZoom();
+				if (!currentBounds || zoom <= 10 || !currentBounds.contains(bounds.getNorthEast()) || !currentBounds.contains(bounds.getSouthWest())) {
+					this.map.fitBounds(bounds);
+				}
 				let time = new Date();
-
 				this.infoLog.push(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} << Watch Position acc:${position.coords.accuracy.toFixed(1)},lat:${position.coords.latitude}, lng:${position.coords.longitude}`);
 			}, this.showError, optn);
 		}
@@ -98,7 +102,7 @@ export class AppComponent implements AfterViewInit {
 				position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
 				map: this.map.googleMap
 			});
-			this.temp = position;
+			this.currentRadius = position;
 			this.marker.setMap(this.map.googleMap);
 			let bounds = new google.maps.LatLngBounds();
 			this.map.fitBounds(bounds.extend(ltLng));
